@@ -1,4 +1,4 @@
-# Tenant-Management-System
+# RentDesk : Rental Analytics & Billing Dashboard
 
 A comprehensive web-based Tenant Management System that helps property owners and administrators manage tenants, rooms, rent collection, utility bills, expenses, and financial reports efficiently.
 
