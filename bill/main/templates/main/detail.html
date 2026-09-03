@@ -1,0 +1,241 @@
+{% extends "main/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content%}
+<style>
+  .app {
+    --bg: #F0F2F6;
+    --card: #FFFFFF;
+    --purple-900: #2E1065;
+    --purple-700: #4C1D95;
+    --purple-500: #7C3AED;
+    --purple-100: #EDE6FB;
+    --text: #262730;
+    --text-soft: #6E6F7A;
+    --border: #E4E4EA;
+    --paid: #2C5C4E;
+    --paid-bg: #E9F1EC;
+    --due: #B45309;
+    --due-bg: #FEF3E2;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2.5rem 3rem;
+  }
+
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    .detail-layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.8rem;
+  }
+
+  .profile-head {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .profile-head .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--purple-700);
+    margin-bottom: 0.6rem;
+  }
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--purple-100);
+    margin-bottom: 0.9rem;
+  }
+  .profile-head h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--purple-900);
+    margin: 0;
+  }
+
+  .section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--purple-700);
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem 1.2rem;
+    margin-bottom: 1.6rem;
+  }
+  .info-item .label {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .info-item .value {
+    font-size: 0.92rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 0.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn-update, .btn-delete {
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .btn-update {
+    background: var(--purple-700);
+    color: #fff;
+  }
+  .btn-update:hover { background: var(--purple-900); }
+  .btn-delete {
+    background: var(--card);
+    color: #B42318;
+    border: 1px solid #F3A9A0;
+  }
+  .btn-delete:hover { background: #FEF2F1; }
+
+  .bill-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .bill-list a { text-decoration: none; color: inherit; }
+  .bill-row {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: border-color 0.15s ease;
+  }
+  .bill-row:hover { border-color: var(--purple-500); }
+  .status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-dot.paid { background: var(--paid); }
+  .status-dot.due { background: var(--due); }
+  .bill-info { flex: 1; }
+  .bill-info .bill-title { font-weight: 600; font-size: 0.88rem; }
+  .bill-info .bill-sub { font-size: 0.78rem; color: var(--text-soft); }
+  .bill-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+    text-transform: uppercase;
+  }
+  .bill-tag.paid { background: var(--paid-bg); color: var(--paid); }
+  .bill-tag.due { background: var(--due-bg); color: var(--due); }
+  .empty-state {
+    color: var(--text-soft);
+    font-size: 0.88rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+    text-align: center;
+  }
+</style>
+
+<div class="app">
+  <div class="detail-layout">
+
+    <!-- Profile + update form -->
+    <div class="panel">
+      <div class="profile-head">
+        <div class="eyebrow">Tenant</div>
+        {% if user.sellerprofile.image %}
+          <img src="{{user.sellerprofile.image.url}}" class="profile-avatar" alt="{{tenant.name}}">
+        {% endif %}
+        <h2>{{tenant.name}}</h2>
+      </div>
+
+      <div class="section-title">User information</div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Status</div><div class="value">{{tenant.status}}</div></div>
+        <div class="info-item"><div class="label">Room</div><div class="value">{{tenant.room}}</div></div>
+        <div class="info-item"><div class="label">DOB</div><div class="value">{{tenant.DOB}}</div></div>
+        <div class="info-item"><div class="label">Occupation</div><div class="value">{{tenant.occup}}</div></div>
+        <div class="info-item"><div class="label">Mother's name</div><div class="value">{{tenant.mother_name}}</div></div>
+        <div class="info-item"><div class="label">Father's name</div><div class="value">{{tenant.father_name}}</div></div>
+        <div class="info-item"><div class="label">Hometown</div><div class="value">{{tenant.hometown}}</div></div>
+        <div class="info-item"><div class="label">Address</div><div class="value">{{tenant.address}}</div></div>
+        <div class="info-item"><div class="label">Contact</div><div class="value">{{tenant.contact}}</div></div>
+        <div class="info-item"><div class="label">Parent's contact</div><div class="value">{{tenant.parents_contact}}</div></div>
+        <div class="info-item"><div class="label">Joined date</div><div class="value">{{tenant_date}}</div></div>
+        <div class="info-item"><div class="label">Leaving date</div><div class="value">{{leaving_date}}</div></div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- {{ form |crispy }} -->
+        <div class="action-row">
+          <a class="btn-update" href="/update-tenant/{{tenant.id}}/">Update</a>
+          <a class="btn-delete" href="/delete/{{tenant.id}}/">Delete</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bills -->
+    <div class="panel">
+      <div class="section-title">Bills</div>
+      <div class="bill-list">
+        {% for bill in bills %}
+        <a href="/bill/{{bill.id}}/">
+          <div class="bill-row">
+            {% if bill.bill_status == "paid" %}
+              <span class="status-dot paid"></span>
+            {% elif bill.bill_status == "due" %}
+              <span class="status-dot due"></span>
+            {% endif %}
+            <div class="bill-info">
+              <div class="bill-title">Bill #{{ bill.id }} · {{ bill.month }}</div>
+              <div class="bill-sub">Created: {{ bill.date_created }}</div>
+            </div>
+            {% if bill.bill_status == "paid" %}
+              <span class="bill-tag paid">Paid</span>
+            {% elif bill.bill_status == "due" %}
+              <span class="bill-tag due">Due</span>
+            {% endif %}
+          </div>
+        </a>
+        {% empty %}
+        <div class="empty-state">No bills for this tenant yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

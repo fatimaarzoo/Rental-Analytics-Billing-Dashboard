@@ -1,0 +1,114 @@
+{% extends 'main/base.html'%}
+{%block content%}
+<div class="container-fluid">
+<h2>Bill Chart</h2>
+    <div class="row py-3 first-row">
+        <div class="col-md-8 ">
+            <div class="chart-card shadow">
+                {{ chart2 |safe }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row text-center">
+                <div class="kpi-card col-sm-6 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">Total Rent</h5> 
+                    <h2 class="text-muted">Rs.{{total_rent_advance}}</h2> 
+                    <h6 style="color: blueviolet;">this year</h6>          
+                </div>
+                <div class="kpi-card col-sm-3 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">Active Tenants</h5> 
+                    <h2 class="text-muted">{{active_tenants}}</h2>           
+                </div>
+                <div class="kpi-card col-sm-10 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">Total Profit</h5>           
+                    <h2 class="text-muted">Rs.{{total_profit}}</h2>
+                </div>
+                <div class="kpi-card col-sm-10 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">Tenants joined this year</h5> 
+                    {{ chart5 | safe }}  
+                
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row second-row  py-3">
+        <div class="col-md-4">
+            <div class="chart-card shadow text-center">
+                {{ chart|safe }}
+                <!-- Current  Month Electricity Bill Total<br>
+                {{current_month_bill_total}} -->
+            </div>
+        </div>
+        <div class="col-md-4">
+                <div class="chart-card shadow">
+                    {{ chart1 |safe }}
+                            <!-- <p style="text-align: center;">Current Month Total rent <br>
+                    {{current_month_rent}}</p> -->
+                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row text-center">
+                <div class="kpi-card col-sm-10 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">This month profit</h5> 
+                    <h2 class="text-muted">Rs.{{month_profit}}</h2>
+                    {% if month_diff_profit > 0 %} 
+                    <h6 class="text-success">Rs.{{month_diff_profit}} ▲    {{month_diff_profit_percentage}}% ▲
+                    </h6>
+                    {% else %}
+                    <h6 class="text-danger">Rs.{{month_diff_profit}} ▼    {{month_diff_profit_percentage}}% ▼
+                    </h6>
+                    {% endif %}
+                    <h6 style="color: blueviolet;">vs previous month</h6>     
+                </div>
+                <div class="kpi-card col-sm-10 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">This month rent</h5> 
+                    <h2 class="text-muted">Rs.{{current_month_rent}}</h2>
+                    {% if month_rent_diff > 0 %} 
+                    <h6 class="text-success">Rs.{{month_rent_diff}} ▲    {{month_rent_diff_percentage}}% ▲
+                    </h6>
+                    {% else %}
+                    <h6 class="text-danger">Rs.{{month_rent_diff}} ▼    {{month_rent_diff_percentage}}% ▼
+                    </h6>
+                    {% endif %}
+                    <h6 style="color: blueviolet;">vs previous month</h6>     
+                </div>
+                <div class="kpi-card col-sm-10 shadow mx-3 mb-3 py-3 py-3">
+                    <h5 style="color: blueviolet;">This month Electricity Bill</h5> 
+                    <h2 class="text-muted">Rs.{{month_total_electricity}}</h2>
+                    {% if month_total_electricity_diff > 0 %} 
+                    <h6 class="text-success">Rs.{{month_total_electricity_diff}} ▲    {{month_total_electricity_diff_percentage}}% ▲
+                    </h6>
+                    {% else %}
+                    <h6 class="text-danger">Rs.{{month_total_electricity_diff}} ▼    {{month_total_electricity_diff_percentage}}% ▼
+                    </h6>
+                    {% endif %}
+                    <h6 style="color: blueviolet;">vs previous month</h6>     
+                </div>
+
+        <!-- <div class="kpi-card col-sm-10 shadow mx-3 my-3 py-3 py-3">
+            <h5 style="color: blueviolet;">Last month to Difference</h5>           
+            <h2 class="text-muted">Rs.{{month_diff_profit}}</h2>
+        </div> -->
+                
+            </div>
+        </div>
+    </div>
+    <div class="row third-row py-3 mt-3">
+        <div class="col-md-7 ">
+            <div class="chart-card shadow">
+                {{chart3 | safe}}
+
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="chart-card shadow">
+                {{chart4 | safe}}
+
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+

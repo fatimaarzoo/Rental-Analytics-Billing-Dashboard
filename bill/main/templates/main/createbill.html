@@ -1,0 +1,632 @@
+{% extends 'main/base.html'%}
+{% load crispy_forms_tags %}
+{%block content%}
+{% load static %}
+<style>
+  #outer {
+    --bg: #F0F2F6;
+    --card: #FFFFFF;
+    --purple-900: #2E1065;
+    --purple-700: #4C1D95;
+    --purple-500: #7C3AED;
+    --purple-100: #EDE6FB;
+    --text: #262730;
+    --text-soft: #6E6F7A;
+    --border: #E4E4EA;
+ 
+    background: var(--bg);
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 32px;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(46, 16, 101, 0.1);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+  }
+ 
+  #outer h2 {
+    text-align: left;
+    color: var(--purple-900);
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+  }
+ 
+  #outer .page-sub {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    margin: 0 0 1.6rem;
+  }
+ 
+  /* ===== Meta fields: month / tenant / room ===== */
+  .meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 180px;
+    min-width: 160px;
+  }
+  .field-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .field-group select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .field-group select:focus {
+    outline: none;
+    border-color: var(--purple-500);
+  }
+ 
+  /* ===== Table ===== */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+ 
+  table.dark-tbl {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed;
+    background: #fff !important;
+    min-width: 720px;
+  }
+ 
+  table.dark-tbl th,
+  table.dark-tbl td {
+    border: 1px solid var(--border) !important;
+    padding: 12px 14px;
+  }
+ 
+  table.dark-tbl th {
+    background: var(--purple-900) !important;
+    color: #fff !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  table.dark-tbl th:first-child { border-top-left-radius: 8px; }
+  table.dark-tbl th:last-child { border-top-right-radius: 8px; }
+ 
+  table.dark-tbl td {
+    font-size: 0.85rem;
+    color: var(--text);
+    text-align: center;
+    background: #fff;
+  }
+ 
+  table.dark-tbl tr:nth-child(even) td {
+    background: #FAF9FD;
+  }
+ 
+  table.dark-tbl tr td.total {
+    background: var(--purple-100) !important;
+    color: var(--purple-900) !important;
+    font-weight: 700;
+  }
+ 
+  table.dark-tbl input[type=text],
+  table.dark-tbl textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    outline: none;
+    text-align: center;
+    box-sizing: border-box;
+    color: var(--text);
+    padding: 6px 4px;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  table.dark-tbl input[type=text]:focus,
+  table.dark-tbl textarea:focus {
+    border-color: var(--purple-500);
+    background: #fff;
+  }
+  table.dark-tbl textarea {
+    resize: vertical;
+    min-height: 32px;
+  }
+ 
+  /* ===== Buttons ===== */
+  #outer button {
+    background-image: linear-gradient(to right, #2E1065 0%, #7C3AED 51%, #4C1D95 100%);
+    background-size: 200% auto;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-position 0.4s ease;
+  }
+  #outer button:hover {
+    background-position: right center;
+  }
+ 
+  .totall, .printing {
+    padding: 0.55rem 1rem;
+    font-size: 0.78rem;
+  }
+ 
+  .action-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 6px 0;
+  }
+ 
+  .save-reset-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .save-reset-row button[type="submit"] {
+    background-image: linear-gradient(to right, #2C5C4E 0%, #3E8E76 51%, #2C5C4E 100%);
+  }
+  .save-reset-row button[type="reset"] {
+    background-image: none;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+  }
+  .save-reset-row button[type="reset"]:hover {
+    border-color: var(--purple-500);
+    color: var(--purple-700);
+  }
+ 
+  #date-time {
+    position: static;
+    text-align: right;
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    margin-top: 16px;
+  }
+ 
+  /* ===== Responsive ===== */
+  @media (max-width: 992px) {
+    #outer { margin: 20px auto; padding: 20px; }
+    table.dark-tbl th, table.dark-tbl td { padding: 8px 10px; font-size: 0.78rem; }
+  }
+ 
+  @media (max-width: 768px) {
+    #outer { margin: 10px; padding: 14px; border-radius: 10px; }
+    #outer h2 { font-size: 1.35rem; }
+    .meta-bar { flex-direction: column; }
+    .table-wrap { padding: 2px; }
+    table.dark-tbl { min-width: 640px; }
+    #outer button { width: 100%; }
+    .action-row, .save-reset-row { flex-direction: column; }
+  }
+ 
+  /* ===== Print-only summary (hidden on screen, shown when printing) ===== */
+  .print-header {
+    display: none;
+  }
+ 
+  /* ===== Print layout ===== */
+  @media print {
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+ 
+    body * {
+      visibility: hidden;
+    }
+    #outer, #outer * {
+      visibility: visible;
+    }
+    #outer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      background: #fff !important;
+      box-shadow: none;
+      border-radius: 0;
+    }
+ 
+    /* Hide everything that isn't part of the printable bill */
+    #outer h2,
+    #outer .page-sub,
+    .field-group label,
+    .action-row,
+    .save-reset-row,
+    #outer button {
+      display: none !important;
+    }
+ 
+    .print-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .print-header .brand {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #000;
+    }
+    .print-header .brand small {
+      display: block;
+      font-weight: 400;
+      font-size: 0.75rem;
+      color: #333;
+    }
+    .print-header .bill-meta {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #000;
+    }
+    .print-header .bill-meta div {
+      margin-bottom: 2px;
+    }
+    .print-header .bill-meta strong {
+      display: inline-block;
+      min-width: 70px;
+      text-align: left;
+    }
+ 
+    /* Meta select boxes: strip chrome, show as plain black text */
+    .meta-bar {
+      display: none;
+    }
+ 
+    /* Table: crisp black-and-white invoice look */
+    .table-wrap {
+      border: none;
+      padding: 0;
+      background: none;
+      overflow: visible;
+    }
+    table.dark-tbl {
+      min-width: 0;
+      width: 100% !important;
+      border: 1.5px solid #000 !important;
+    }
+    table.dark-tbl th,
+    table.dark-tbl td {
+      border: 1px solid #000 !important;
+      padding: 8px 10px;
+      color: #000 !important;
+    }
+    table.dark-tbl th {
+      background: #eee !important;
+      color: #000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    table.dark-tbl tr:nth-child(even) td {
+      background: #fff !important;
+    }
+    table.dark-tbl tr td.total {
+      background: #eee !important;
+      color: #000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    table.dark-tbl input[type=text],
+    table.dark-tbl textarea {
+      border: none !important;
+      background: transparent !important;
+      color: #000 !important;
+      padding: 0;
+    }
+ 
+    #date-time {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 0.75rem;
+      color: #333;
+    }
+ 
+    .print-signoff {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: #000;
+    }
+    .print-signoff div {
+      border-top: 1px solid #000;
+      padding-top: 4px;
+      width: 180px;
+      text-align: center;
+    }
+  }
+</style>
+ 
+<div id="outer">
+  <div class="print-header">
+    <div class="brand">
+      Rent Bill
+      <small>Generated from tenant management system</small>
+    </div>
+    <div class="bill-meta">
+      <div><strong>Tenant:</strong> <span id="print-name">—</span></div>
+      <div><strong>Room:</strong> <span id="print-room">—</span></div>
+      <div><strong>Month:</strong> <span id="print-month">—</span></div>
+    </div>
+  </div>
+ 
+  <h2>Create Bill</h2>
+  <p class="page-sub">Fill in the meter readings below — totals are calculated automatically.</p>
+ 
+  <form id="billform" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+ 
+    <div class="meta-bar">
+      <div class="field-group">
+        <label for="month-select">Rent for the month</label>
+        <select id="month-select" name="month" required>
+          <option>January</option>
+          <option>February</option>
+          <option>March</option>
+          <option>April</option>
+          <option>May</option>
+          <option>June</option>
+          <option>July</option>
+          <option>August</option>
+          <option>September</option>
+          <option>October</option>
+          <option>November</option>
+          <option>December</option>
+        </select>
+      </div>
+ 
+      <div class="field-group">
+        <label for="name-select">Name</label>
+        <select name="name" id="name-select" default="select" multiple required>
+          {% for tenant in tenants %}
+            {% if tenant.status == True %}
+            <option>{{tenant}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+ 
+      <div class="field-group">
+        <label for="room-select">Room</label>
+        <select name="room" id="room-select" default="select" required>
+          <option value="1">1: Balcony room</option>
+          <option value="2">2: Back right room</option>
+          <option value="3">3: Back left room</option>
+          <option value="4">4: Top room</option>
+        </select>
+      </div>
+    </div>
+ 
+    <div class="table-wrap">
+      <table class="dark-tbl" cellspacing="0">
+        <tr>
+          <th>Sl. No.</th>
+          <th>Particular</th>
+          <th>Previous Reading</th>
+          <th>Current Reading</th>
+          <th>Difference</th>
+          <th>Per Unit</th>
+          <th>Amount</th>
+          <th>Remarks</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Electricity(MAIN)</td>
+          <td><input type="text" name="pre" class="pre" oninput="diff()" required></td>
+          <td><input type="text" name="cur" class="cur" oninput="diff()" required></td>
+          <td class="r1diff" name="diff"></td>
+          <td>10</td>
+          <td class="r1amnt" name="am"></td>
+          <td><textarea name="rem"></textarea></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Electricity(ROOM)</td>
+          <td><input type="text" name="pre2" class="pre2" oninput="diff2()" required></td>
+          <td><input type="text" name="cur2" class="cur2" oninput="diff2()" required></td>
+          <td class="r2diff" name="diff2"></td>
+          <td>10</td>
+          <td class="r2amnt" name="am2"></td>
+          <td><textarea name="rem2"></textarea></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Electricity(MAIN)</td>
+          <td><input type="text" name="pre3" class="pre3" oninput="diff3()" required></td>
+          <td><input type="text" name="cur3" class="cur3" oninput="diff3()" required></td>
+          <td class="r3diff" name="diff3"></td>
+          <td>10</td>
+          <td class="r3amnt" name="am3"></td>
+          <td><textarea name="rem3"></textarea></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>RENT ADVANCE</td>
+          <td colspan="4"></td>
+          <td><input type="text" oninput="" class="r4amnt" name="am4" required></td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td colspan="6">TOTAL</td>
+          <td class="total">0</td>
+          <td>Check then pay</td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+          <td><button type="button" class="totall" onclick="totalamount()" name="total">FIND TOTAL</button></td>
+          <td><button class="printing" onclick="printpage()">PRINT BILL</button></td>
+        </tr>
+      </table>
+    </div>
+ 
+    <div class="save-reset-row">
+      <button type="submit" title="Print before Save">SAVE</button>
+      <button type="reset">RESET</button>
+    </div>
+  </form>
+ 
+  <p id="date-time">This text is in the bottom right corner.</p>
+ 
+  <div class="print-signoff">
+    <div>Landlord signature</div>
+    <div>Tenant signature</div>
+  </div>
+</div>
+ 
+<script>
+var amm;
+amm=0;
+var l;
+var l2;
+var l3;
+ 
+function diff()
+{
+var pre=document.querySelector(".pre").value;
+var cur=document.querySelector(".cur").value;
+var d=cur-pre;
+document.querySelector(".r1diff").value=d;
+var r1diff=document.querySelector(".r1diff");
+r1diff.value=d;
+r1diff.innerHTML=d;
+amount(d);
+ 
+}
+function diff2()
+{
+var pre=document.querySelector(".pre2").value;
+var cur=document.querySelector(".cur2").value;
+var r2diff=document.querySelector(".r2diff");
+var d=cur-pre;
+r2diff.innerHTML=d;
+amount2(d);
+ 
+}
+function diff3()
+{
+var pre=document.querySelector(".pre3").value;
+var cur=document.querySelector(".cur3").value;
+var r3diff=document.querySelector(".r3diff");
+var d=cur-pre;
+r3diff.innerHTML=d;
+amount3(d);
+ 
+}
+function amount(a)
+{
+var am=10*a;
+var r1amnt=document.querySelector(".r1amnt");
+r1amnt.innerHTML=am;
+amm=amm+am;
+l=am;
+return am;
+}
+ 
+function amount2(a2)
+{
+var am=10*a2;
+var r2amnt=document.querySelector(".r2amnt");
+r2amnt.innerHTML=am;
+amm=amm+am;
+l2=am;
+return am;
+}
+function amount3(a3)
+{
+var am=10*a3;
+var r3amnt=document.querySelector(".r3amnt");
+r3amnt.innerHTML=am;
+amm=amm+am;
+l3=am;
+return am;
+}
+function totalamount()
+{
+var r4amnt=document.querySelector(".r4amnt").value;
+var x=l+l2+l3+parseInt(r4amnt);
+var total=document.querySelector(".total");
+total.innerHTML=x;
+}
+function printpage()
+{
+    // const printContent = document.getElementById(billform).innerHTML;
+    // const originalContent = document.body.innerHTML;
+    // document.body.innerHTML = printContent;
+ 
+    window.print();
+ 
+    // document.body.innerHTML = originalContent;S
+ 
+}
+function warning()
+{
+       confirm("Have you printed the bill? || Click 'cancel' to go back if you haven't or 'ok' if you have")
+}
+function fordatetime()
+{
+var now= new Date();
+var formatedDateTime= now.toLocaleString();
+document.getElementById("date-time").innerText =formatedDateTime;
+}
+fordatetime();
+setInterval(fordatetime,1000);
+</script>
+ 
+<!-- Additional script: fills the print-only header just before printing. Does not modify anything above. -->
+<script>
+window.addEventListener('beforeprint', function () {
+  var monthEl = document.getElementById('month-select');
+  var nameEl = document.getElementById('name-select');
+  var roomEl = document.getElementById('room-select');
+ 
+  var printMonth = document.getElementById('print-month');
+  var printName = document.getElementById('print-name');
+  var printRoom = document.getElementById('print-room');
+ 
+  if (monthEl && printMonth) printMonth.textContent = monthEl.value;
+  if (nameEl && printName) printName.textContent = nameEl.value;
+  if (roomEl && printRoom) printRoom.textContent = roomEl.options[roomEl.selectedIndex].text;
+});
+</script>
+{%endblock%}
+ 

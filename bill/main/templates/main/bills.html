@@ -1,0 +1,170 @@
+{% extends 'main/base.html'%}
+{% block content %}
+<style>
+  .app {
+    --bg: #F0F2F6;
+    --card: #FFFFFF;
+    --purple-900: #2E1065;
+    --purple-700: #4C1D95;
+    --purple-500: #7C3AED;
+    --purple-100: #EDE6FB;
+    --text: #262730;
+    --text-soft: #6E6F7A;
+    --border: #E4E4EA;
+    --due: #B45309;
+    --due-bg: #FEF3E2;
+    --paid: #2C5C4E;
+    --paid-bg: #E9F1EC;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2.5rem 3rem;
+  }
+  .app h1 { font-size: 1.9rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .app .sub { color: var(--text-soft); font-size: 0.95rem; margin: 0 0 2rem; }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .filter-bar input[type="text"] {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    flex: 1 1 200px;
+    min-width: 160px;
+  }
+  .filter-bar select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: var(--card);
+    color: var(--text);
+  }
+  .filter-pill {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .filter-pill.active {
+    background: var(--purple-700);
+    border-color: var(--purple-700);
+    color: #fff;
+  }
+  .filter-pill:hover { border-color: var(--purple-500); }
+  .filter-bar button.apply {
+    margin-left: auto;
+    background: var(--purple-700);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .bill-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .bill-list a { text-decoration: none; color: inherit; }
+  .bill-row {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color 0.15s ease;
+  }
+  .bill-row:hover { border-color: var(--purple-500); }
+  .bill-id {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    background: var(--bg);
+    border-radius: 5px;
+    padding: 0.2rem 0.5rem;
+    flex-shrink: 0;
+  }
+  .bill-names { font-weight: 600; flex: 1 1 auto; min-width: 140px; }
+  .bill-meta { color: var(--text-soft); font-size: 0.85rem; flex-shrink: 0; }
+  .bill-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .bill-tag.due { background: var(--due-bg); color: var(--due); }
+  .bill-tag.paid { background: var(--paid-bg); color: var(--paid); }
+  .empty-state {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    border: 1px dashed var(--border);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+  }
+</style>
+
+<div class="app">
+  <h1>Bills</h1>
+  <p class="sub">Browse and search every invoice — filter by status, month, room, or tenant.</p>
+
+  <form class="filter-bar" method="get">
+    <button type="button" class="filter-pill">Paid</button>
+    <button type="button" class="filter-pill">Due</button>
+    <button type="button" class="filter-pill active">All</button>
+    <input type="text" name="q" placeholder="Search by name, bill ID, or room">
+    <select name="month">
+      <option value="">Month</option>
+    </select>
+    <select name="year">
+      <option value="">Year</option>
+    </select>
+    <select name="room">
+      <option value="">Room</option>
+    </select>
+    <button type="button" class="filter-pill">Active tenants only</button>
+    <button type="submit" class="apply">Search</button>
+  </form>
+
+  <div class="bill-list">
+    {% for b in bill %}
+    <a href="/bill/{{ b.id }}/">
+      <div class="bill-row">
+        <span class="bill-id">#{{ b.id }}</span>
+        <span class="bill-names">
+          {% for t in b.tenant.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </span>
+        <span class="bill-meta">{{ b.month }} · Room {{ b.room }}</span>
+        {% if b.bill_status == "due" %}
+          <span class="bill-tag due">Due</span>
+        {% elif b.bill_status == "paid" %}
+          <span class="bill-tag paid">Paid</span>
+        {% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <div class="empty-state">No bills found.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

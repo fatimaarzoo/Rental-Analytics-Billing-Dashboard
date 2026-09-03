@@ -1,0 +1,115 @@
+{% extends 'main/base.html'%}
+{% load crispy_forms_tags %}
+{%block content%}
+<div class="container-fluid0">
+<div class="row">
+    <div class="col-sm-2  mx-3"></div>
+
+    <div class="col-sm-7 px-2 py-2 mt-2 bg-light shadow ">
+    <h1 style="text-align: center;"> Bill ID-{{bill.id}}-{{bill.month}}</h1>
+    <hr>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <!-- <th scope="col">{{bill.tenant.name}}</th> -->
+                <th scope="col">
+                    {% for t in bill.tenant.all %}
+                    {{ t.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </th>
+            </tr>
+            <tr>
+                <th scope="col">Room</th>
+                <th scope="col">{{bill.room}}</th>
+            </tr>
+        </thead>
+    </table>
+        <table class="table table-striped table-bordered border-dark">
+    <thead class="table-danger">
+        <tr>
+        <th scope="col">Sl.no.</th>
+        <th scope="col">Particular</th>
+        <th scope="col">Previous reading</th>
+        <th scope="col">Current Reading</th>
+        <th scope="col">Difference</th>
+        <th scope="col">Per Unit</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Remarks</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        <tr>
+        <th scope="row">1</th>
+        <th scope="row">Electricity(MAIN)</th>
+        <td>{{bill.previous}}</td>
+        <td>{{bill.current}}</td>
+        <td>{{bill.diff}}</td>
+        <td>10</td>
+        <td>{{bill.amount}}</td>
+        <td>{{bill.remark}}</td>
+        </tr>
+        <tr>
+        <th scope="row">2</th>
+        <th scope="row">Electricity(ROOM)</th>
+        <td>{{bill.previous2}}</td>
+        <td>{{bill.current2}}</td>
+        <td>{{bill.diff2}}</td>
+        <td>10</td>
+        <td>{{bill.amount2}}</td>
+        <td>{{bill.remark2}}</td>
+        </tr>
+        <tr>
+        <th scope="row">3</th>
+        <th scope="row">Electricity(MAIN)</th>
+        <td>{{bill.previous3}}</td>
+        <td>{{bill.current3}}</td>
+        <td>{{bill.diff3}}</td>
+        <td>10</td>
+        <td>{{bill.amount3}}</td>
+        <td>{{bill.remark3}}</td>
+        </tr>
+        <tr>
+        <th scope="row">3</th>
+        <th scope="row">RENT ADVANCE</th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{bill.previous4}}</td>
+        <td>{{bill.amount4}}</td>
+        <td>{{bill.remark4}}</td>
+        </tr>
+        <tr class="table-light">
+        
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        
+        <td></td>
+        <th scope="row">TOTAL</th>
+        <td class="table-primary">{{bill.total}}</td>
+        <td></td>
+        </tr>
+    </tbody>
+    </table>
+    {{bill.date_created}}|
+    {{bill.bill_status}}
+    <br>
+
+    
+    <form method="post" enctype="multipart/form-data" >
+    {% csrf_token %}
+
+        <a class="btn btn-danger" href="/bill-delete/{{bill.id}}/">DELETE</a><br>
+        Update Bill Status:<select name="status">
+            <option >paid</option>
+            <option>due</option>
+        </select>
+        <button type="submit">UPDATE STATUS</button>
+    </form>
+    </div>
+<div class="col-sm-2"></div>
+</div>
+</div>
+{%endblock%}

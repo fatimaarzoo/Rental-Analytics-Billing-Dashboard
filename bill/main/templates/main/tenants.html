@@ -1,0 +1,134 @@
+{% extends 'main/base.html'%}
+{%block content%}
+<style>
+  .app {
+    --bg: #F0F2F6;
+    --card: #FFFFFF;
+    --purple-900: #2E1065;
+    --purple-700: #4C1D95;
+    --purple-500: #7C3AED;
+    --purple-100: #EDE6FB;
+    --text: #262730;
+    --text-soft: #6E6F7A;
+    --border: #E4E4EA;
+    --active: #2C5C4E;
+    --active-bg: #E9F1EC;
+    --inactive: #B45309;
+    --inactive-bg: #FEF3E2;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2.5rem 3rem;
+  }
+  .app h1 { font-size: 1.9rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .app .sub { color: var(--text-soft); font-size: 0.95rem; margin: 0 0 1.6rem; }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
+  }
+  .filter-pill {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .filter-pill.active {
+    background: var(--purple-700);
+    border-color: var(--purple-700);
+    color: #fff;
+  }
+  .filter-pill:hover { border-color: var(--purple-500); }
+
+  .tenant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+  }
+  .tenant-grid a { text-decoration: none; color: inherit; }
+
+  .tenant-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .tenant-card:hover {
+    border-color: var(--purple-500);
+    transform: translateY(-2px);
+  }
+  .tenant-card-header {
+    background: var(--purple-900);
+    color: #fff;
+    padding: 0.9rem 1.1rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .tenant-card-body {
+    padding: 0.9rem 1.1rem;
+  }
+  .status-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+  }
+  .status-tag.active { background: var(--active-bg); color: var(--active); }
+  .status-tag.inactive { background: var(--inactive-bg); color: var(--inactive); }
+  .tenant-occup {
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .empty-state {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    border: 1px dashed var(--border);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+  }
+</style>
+
+<div class="app">
+  <h1>Tenants</h1>
+  <p class="sub">Everyone who's lived here — filter by current status.</p>
+
+  <form method="get" class="filter-bar">
+    <button type="submit" name="category" value="ALL" class="filter-pill active">All tenants</button>
+    <button type="submit" name="category" value="ACTIVE" class="filter-pill">Present tenants</button>
+    <button type="submit" name="category" value="NOTACTIVE" class="filter-pill">Past tenants</button>
+  </form>
+
+  <div class="tenant-grid">
+    {% for tenant in tenants %}
+    <a href="detail/{{tenant.id}}/">
+      <div class="tenant-card">
+        <div class="tenant-card-header">{{tenant.name}}</div>
+        <div class="tenant-card-body">
+          {% if tenant.status == False %}
+          <span class="status-tag inactive">Inactive</span>
+          {% elif tenant.status == True %}
+          <span class="status-tag active">Active</span>
+          {% endif %}
+          <p class="tenant-occup">{{tenant.occup}}</p>
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="empty-state">No tenants found.</div>
+    {% endfor %}
+  </div>
+</div>
+{%endblock%}

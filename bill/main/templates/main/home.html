@@ -1,0 +1,105 @@
+{% extends 'main/base.html'%}
+{%block content%}
+<style>
+  .app {
+    --bg: #F0F2F6;
+    --card: #FFFFFF;
+    --purple-900: #2E1065;
+    --purple-700: #4C1D95;
+    --purple-500: #7C3AED;
+    --purple-100: #EDE6FB;
+    --text: #262730;
+    --text-soft: #6E6F7A;
+    --border: #E4E4EA;
+    --due: #B45309;
+    --due-bg: #FEF3E2;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2.5rem 3rem;
+  }
+  .app h1 { font-size: 1.9rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .app .sub { color: var(--text-soft); font-size: 0.95rem; margin: 0 0 2rem; }
+  .section-title { font-size: 1.1rem; font-weight: 600; margin: 0 0 0.9rem; color: var(--purple-900); }
+  .section { margin-bottom: 2.5rem; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+  .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; border-top: 3px solid var(--purple-500); }
+  .metric-card .label { font-size: 0.78rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+  .metric-card .value { font-size: 1.9rem; font-weight: 700; color: var(--purple-900); margin: 0.15rem 0 0.6rem; }
+  .metric-card .names { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .metric-card .names span { background: var(--purple-100); color: var(--purple-700); font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 5px; }
+  .metric-card .empty { font-size: 0.8rem; color: var(--text-soft); font-style: italic; }
+  .metric-card .names:empty::after { content: "Vacant"; font-size: 0.8rem; color: var(--text-soft); font-style: italic; }
+  .bill-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.1rem; display: flex; justify-content: space-between; align-items: center; max-width: 420px; margin-bottom: 0.6rem; }
+  .bill-card .who { font-weight: 600; }
+  .bill-card .when { font-size: 0.82rem; color: var(--text-soft); margin-top: 0.15rem; }
+  .bill-tag { background: var(--due-bg); color: var(--due); font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 5px; white-space: nowrap; }
+  .roster-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.9rem; }
+  .roster-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem; display: flex; align-items: center; gap: 0.7rem; }
+  .roster-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--purple-700); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+  .roster-name { font-weight: 600; font-size: 0.9rem; }
+  .cta { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--purple-700); color: #fff; text-decoration: none; padding: 0.65rem 1.1rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; }
+  .ledger-empty { color: var(--text-soft); font-size: 0.9rem; border: 1px dashed var(--border); padding: 1rem 1.1rem; border-radius: 10px; }
+</style>
+
+<div class="app">
+
+  <h1>Welcome back, owner</h1>
+  <p class="sub">Here's where things stand across your rooms, bills, and tenants.</p>
+
+  <div class="section">
+    <div class="section-title">Current room occupation</div>
+    <div class="metric-grid">
+      {% for room_num in "1234" %}
+      <div class="metric-card">
+        <div class="label">Room {{ room_num }}</div>
+        <div class="names">
+          {% for tenant in tenants %}
+            {% if tenant.room == room_num and tenant.status == True %}
+              <span>{{ tenant.name }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Bills due</div>
+    {% for bill in bills %}
+      {% if bill.bill_status == "due" %}
+        <div class="bill-card">
+          <div>
+            <div class="who">
+              {% for t in bill.tenant.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </div>
+            <div class="when">{{ bill.month }} · {{ bill.date_created }}</div>
+          </div>
+          <div class="bill-tag">Due</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tenants</div>
+    <div class="roster-grid">
+      {% for tenant in tenants %}
+        {% if tenant.status == True %}
+          <div class="roster-card">
+            <div class="roster-avatar">{{ tenant.name|slice:":2"|upper }}</div>
+            <div class="roster-name">{{ tenant.name }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Dashboard</div>
+    <a href="/statistics/" class="cta">View statistics →</a>
+  </div>
+
+</div>
+{%endblock%}

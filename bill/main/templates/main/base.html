@@ -1,0 +1,72 @@
+{% load django_bootstrap5 %}
+{% bootstrap_css %}   
+{% bootstrap_javascript %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+.navbar
+{
+    background-color: rgb(89, 15, 145);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    color: white;
+
+}
+.card
+{
+    /* background-color: rgb(89, 15, 145); */
+    margin: 20;
+    color: white;
+}
+.navbar-nav{
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+.navbar-nav .nav-item{
+  align-items: center;
+  color: white !important;
+}
+
+</style>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+  <div class="container-fluid">
+    <a class="navbar-brand text-light" href="/">RentDesk</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ">
+        <li class="nav-item ">
+          <a class="nav-link text-light " href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="/tenants/">Tenants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="/addtenant/">Add Tenant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="/bills/">Bills</a>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="/createbill/">Create Bill</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" href="/statistics/">Statistics</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+    {%block content%}
+    
+    {%endblock%}
+    
+</body>
+</html>

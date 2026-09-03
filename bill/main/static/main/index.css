@@ -1,0 +1,225 @@
+#outer
+{
+background: #F0F2F6;
+width: 100%;
+max-width: 1200px;
+/* height:900px; */
+margin: 50px auto;
+padding: 24px;
+box-sizing: border-box;
+position: relative;
+border-radius: 12px;
+box-shadow: 0 1px 3px rgba(46, 16, 101, 0.1);
+}
+h2
+{
+text-align:center;
+color: #2E1065;
+}
+p
+{
+position:absolute;
+bottom: 0;
+right: 0;
+}
+
+.name-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin: 10px 0 20px;
+}
+.name-check {
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* ===== Purple table — overrides any earlier table rules ===== */
+table.dark-tbl {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: fixed;
+  background: #fff !important;
+  border-radius: 0;
+  border: 3px solid #4C1D95 !important;
+}
+
+table.dark-tbl th,
+table.dark-tbl td {
+  border: 2px solid #7C3AED !important;
+  padding: 12px 16px;
+}
+
+table.dark-tbl th {
+  background: #2E1065 !important;
+  background-color: #2E1065 !important;
+  color: #fff !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+table.dark-tbl td {
+  font-size: 13px;
+  color: #262730;
+  text-align: center;
+  background: #F5F2FB;
+}
+
+table.dark-tbl tr:nth-child(even) td {
+  background: #EDE6FB;
+}
+
+table.dark-tbl tr:nth-child(odd) td {
+  background: #ffffff;
+}
+
+/* TOTAL row */
+table.dark-tbl tr td.total {
+  background: #2E1065 !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+table.dark-tbl input[type=text],
+table.dark-tbl textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: center;
+  box-sizing: border-box;
+  color: #262730;
+}
+
+/* ===== Buttons ===== */
+button {
+  background-image: linear-gradient(to right, #2E1065 0%, #7C3AED 51%, #4C1D95 100%);
+  margin: 5px;
+  padding: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 2px;
+  display: block;
+  outline: none;
+  border: none;
+}
+
+button:hover {
+  background-position: right center;
+  color: #EDE6FB;
+  text-decoration: none;
+}
+tbody td:hover {
+  background: rgba(124, 58, 237, 0.18) !important;
+  color: #4C1D95;
+}
+
+btn {
+  background: rgba(124, 58, 237, 0.18)
+}
+
+/* table.dark-tbl td:first-child {
+  background: #2E1065 !important;
+  color: #fff !important;
+  font-weight: 700;
+} */
+
+/* csstable.dark-tbl .total {
+  background: #2E1065 !important;
+  color: #fff !important;
+  font-weight: 700;
+} */
+
+/* ===== Responsive ===== */
+
+/* Tablets and small laptops */
+@media (max-width: 992px) {
+  #outer {
+    margin: 24px auto;
+    padding: 16px;
+  }
+  table.dark-tbl th,
+  table.dark-tbl td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+  #outer {
+    margin: 12px auto;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h5 {
+    font-size: 0.95rem;
+  }
+
+  /* Let selects/inputs breathe and stack instead of squeezing */
+  select#input-box {
+    width: 100%;
+    max-width: 100%;
+    margin: 6px 0;
+    display: inline-block;
+  }
+
+  /* Table becomes horizontally scrollable instead of squashing columns */
+  table.dark-tbl {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    border-width: 2px !important;
+  }
+
+  table.dark-tbl th,
+  table.dark-tbl td {
+    padding: 8px 12px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  table.dark-tbl input[type=text],
+  table.dark-tbl textarea {
+    min-width: 70px;
+  }
+
+  button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  p#date-time {
+    position: static;
+    text-align: right;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #6E6F7A;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  #outer {
+    padding: 8px;
+  }
+  table.dark-tbl th,
+  table.dark-tbl td {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+}
