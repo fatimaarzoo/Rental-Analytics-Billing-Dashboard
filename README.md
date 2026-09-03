@@ -37,22 +37,22 @@ A comprehensive web-based Tenant Management System that helps property owners an
 
 ## Tech Stack
 
-### Backend
+## Backend
 - Python
 - Django
 - SQLAlchemy
 - Pandas
   
-### Frontend
+## Frontend
 - HTML5
 - CSS3
 - Bootstrap
 - JavaScript
 
-### Database
+## Database
 -  SQLite
 
-### Data Visualization
+## Data Visualization
 - Plotly
 
 ---
