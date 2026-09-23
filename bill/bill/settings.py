@@ -188,4 +188,4 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     
-ALLOWED_HOSTS = ["3.84.213.189", "127.0.0.1"]
+ALLOWED_HOSTS = ["23.21.196.153", "127.0.0.1"]
