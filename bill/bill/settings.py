@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-kn2lovejbgdlsrmzy$a13=8(qq45(99+4#mi*%@kns-9wcdk0p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+import os 
+from dotenv import load_dotenv
+load_dotenv()
 
 # Application definition
 
@@ -41,7 +42,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'crispy_forms',
     'main',
-    'analysis'
+    'analysis',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -77,13 +79,41 @@ WSGI_APPLICATION = 'bill.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# Fetch environment variables for PostgreSQL
+POSTGRES_DB = os.getenv("DB_NAME")
+POSTGRES_PASSWORD = os.getenv("DB_PASSWORD")
+POSTGRES_USER = os.getenv("DB_USER")
+POSTGRES_HOST = os.getenv("DB_HOST")
+POSTGRES_PORT = os.getenv("DB_PORT")
 
+# Check if PostgreSQL environment variables are set
+POSTGRES_READY = (
+    POSTGRES_DB is not None
+    and POSTGRES_PASSWORD is not None
+    and POSTGRES_USER is not None
+    and POSTGRES_HOST is not None
+    and POSTGRES_PORT is not None
+)
+
+# Define the DATABASES setting based on the availability of PostgreSQL variables
+if POSTGRES_READY:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': POSTGRES_DB,
+            'USER': POSTGRES_USER,
+            'PASSWORD': POSTGRES_PASSWORD,
+            'HOST': POSTGRES_HOST,
+            'PORT': POSTGRES_PORT,
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -115,13 +145,47 @@ USE_I18N = True
 
 USE_TZ = True
 
+CRISPY_TEMPLATE_PACK= 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS= 'bootstrap5'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
 
-CRISPY_TEMPLATE_PACK= 'bootstrap5'
-CRISPY_ALLOWED_TEMPLATE_PACKS= 'bootstrap5'
+# Fetch environment variables for AWS S3
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', default='us-east-1')
 
+# Check if all necessary AWS S3 environment variables are set
+AWS_S3_READY = (
+    AWS_ACCESS_KEY_ID is not None
+    and AWS_SECRET_ACCESS_KEY is not None
+    and AWS_STORAGE_BUCKET_NAME is not None
+    and AWS_S3_REGION_NAME is not None
+)
+
+if AWS_S3_READY:
+    # Configure AWS S3 settings
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+    # Static files (CSS, JavaScript, images)
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    # Media files (uploads)
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    # Optional: Cache control settings
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+else:
+    STATIC_URL = 'static/'
+    MEDIA_URL = '/media/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    
 ALLOWED_HOSTS = ["3.84.213.189", "127.0.0.1"]
